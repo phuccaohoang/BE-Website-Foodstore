@@ -9,4 +9,8 @@ class CouponCustomer extends Model
 {
     use HasFactory;
     protected $table = "coupons_customers";
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 }

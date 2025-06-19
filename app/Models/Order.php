@@ -9,6 +9,9 @@ class Order extends Model
 {
     use HasFactory;
     protected $table = "orders";
+    protected $hidden = [
+        'created_at',
+    ];
 
     public function customer()
     {

@@ -9,6 +9,9 @@ class Feedback extends Model
 {
     use HasFactory;
     protected $table = "feedbacks";
+    protected $hidden = [
+        'created_at',
+    ];
 
     public function administrator()
     {

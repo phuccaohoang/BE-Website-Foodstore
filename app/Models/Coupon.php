@@ -9,4 +9,13 @@ class Coupon extends Model
 {
     use HasFactory;
     protected $table = "coupons";
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
+    public function customers()
+    {
+        return $this->belongsToMany(Customer::class, 'coupons_customers', 'coupon_id', 'customer_id');
+    }
 }

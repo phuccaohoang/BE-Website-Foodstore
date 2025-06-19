@@ -9,9 +9,21 @@ class Customer extends Model
 {
     use HasFactory;
     protected $table = "customers";
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 
     public function account()
     {
         return $this->belongsTo(Account::class);
+    }
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+    public function coupons()
+    {
+        return $this->belongsToMany(Coupon::class, 'coupons_customers', 'customer_id', 'coupon_id');
     }
 }

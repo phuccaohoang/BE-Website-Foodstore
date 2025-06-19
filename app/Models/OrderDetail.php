@@ -9,4 +9,13 @@ class OrderDetail extends Model
 {
     use HasFactory;
     protected $table = "order_details";
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
+    public function food()
+    {
+        return $this->belongsTo(Food::class);
+    }
 }

@@ -9,4 +9,8 @@ class OrderStatus extends Model
 {
     use HasFactory;
     protected $table = "order_status";
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 }

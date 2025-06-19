@@ -9,6 +9,9 @@ class Review extends Model
 {
     use HasFactory;
     protected $table = "reviews";
+    protected $hidden = [
+        'created_at',
+    ];
 
     public function customer()
     {

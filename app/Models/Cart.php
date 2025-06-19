@@ -9,6 +9,10 @@ class Cart extends Model
 {
     use HasFactory;
     protected $table = "carts";
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
 
     public function customer()
     {
