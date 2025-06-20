@@ -17,7 +17,7 @@ class OrderController extends Controller
             $sort_by = request('sort_by');
             $fullname = request('fullname');
 
-            $query = Order::with('order_details.food', 'customer');
+            $query = Order::with('order_details.food', 'customer', 'order_status');
             if (!empty($status)) {
                 $query = $query->where('status', $status);
             }

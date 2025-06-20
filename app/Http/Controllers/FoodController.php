@@ -221,4 +221,22 @@ class FoodController extends Controller
             ], 500);
         }
     }
+    //
+    public function getFood()
+    {
+        try {
+            $slug = request('slug');
+            $query = Food::with('category')->where('slug', $slug);
+
+            return response()->json([
+                'status' => true,
+                'data' => $query->get(),
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

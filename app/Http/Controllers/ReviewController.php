@@ -30,4 +30,45 @@ class ReviewController extends Controller
             ], 500);
         }
     }
+    //
+    public function getReviews()
+    {
+        try {
+            $is_feedback = request('is_feedback');
+            $status = request('status');
+            $sort_by = request('sort_by');
+
+            $query = Review::with('feedbacks', 'food', 'customer');
+            if ($is_feedback === 1) {
+                $query = $query->has('feedbacks');
+            }
+            if ($is_feedback === 0) {
+                $query = $query->doesntHave('feedbacks');
+            }
+            if (!empty($status)) {
+                $query = $query->where('status', $status);
+            }
+            switch ($sort_by) {
+                case 'rating_asc':
+                    $query->orderBy('rating', 'asc');
+                    break;
+                case 'rating_desc':
+                    $query->orderBy('rating', 'desc');
+                    break;
+                default:
+                    $query->orderBy('created_at', 'desc');
+                    break;
+            }
+
+            return response()->json([
+                'status' => true,
+                'data' => $query->get(),
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

@@ -44,7 +44,7 @@ class AuthController extends Controller
     //
     public function logout()
     {
-        JWTAuth::invalidate(request()->get('jwt_token'));
+        JWTAuth::invalidate(request('jwt_token'));
         $cookie = Cookie::forget('jwt_token');
 
         return response()->json([
@@ -82,10 +82,9 @@ class AuthController extends Controller
     //
     public function refresh()
     {
-        $oldToken = request()->get('jwt_token');
-        JWTAuth::setToken($oldToken);
         $newToken = JWTAuth::refresh();
 
+        $oldToken = request('jwt_token');
         JWTAuth::invalidate($oldToken);
 
         $cookie = Cookie::make(

@@ -17,4 +17,12 @@ class Review extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+    public function food()
+    {
+        return $this->belongsTo(Food::class);
+    }
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class);
+    }
 }

@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\FoodController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,10 +37,13 @@ Route::prefix('/get')->group(function () {
     Route::get('/accounts', [AccountController::class, 'getAccounts']);
 
     Route::get('/foods', [FoodController::class, 'getFoods']);
+    Route::get('/food', [FoodController::class, 'getFood']);
 
     Route::get('/coupons', [CouponController::class, 'getCoupons']);
 
-    Route::get('/orders', [CouponController::class, 'getOrders']);
+    Route::get('/orders', [OrderController::class, 'getOrders']);
+
+    Route::get('/reviews', [ReviewController::class, 'getReviews']);
 });
 Route::prefix('/update')->group(function () {
     Route::patch('/account-status', [AccountController::class, 'updateAccountStatus']);
@@ -48,10 +53,10 @@ Route::prefix('/update')->group(function () {
 
     Route::patch('/coupon-status', [CouponController::class, 'updateCouponStatus']);
 
-    Route::patch('/order-status', [CouponController::class, 'updateOrderStatus']);
-    Route::put('/cancel-order', [CouponController::class, 'cancelOrder']);
+    Route::patch('/order-status', [OrderController::class, 'updateOrderStatus']);
+    Route::put('/cancel-order', [OrderController::class, 'cancelOrder']);
 
-    Route::patch('/disable-review', [CouponController::class, 'disableReview']);
+    Route::patch('/disable-review', [ReviewController::class, 'disableReview']);
 });
 Route::prefix('/store')->group(function () {
     Route::post('/food', [FoodController::class, 'storeFood']);
