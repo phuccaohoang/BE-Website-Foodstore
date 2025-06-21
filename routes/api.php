@@ -4,10 +4,13 @@ use App\Http\Controllers\AccountController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReviewController;
+use App\Models\Cart;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +42,8 @@ Route::prefix('/get')->group(function () {
     Route::get('/foods', [FoodController::class, 'getFoods']);
     Route::get('/food', [FoodController::class, 'getFood']);
 
+    Route::get('/cart', [CartController::class, 'getCart']);
+
     Route::get('/coupons', [CouponController::class, 'getCoupons']);
 
     Route::get('/orders', [OrderController::class, 'getOrders']);
@@ -51,6 +56,8 @@ Route::prefix('/update')->group(function () {
     Route::patch('/food-status', [FoodController::class, 'updateFoodStatus']);
     Route::put('/foods', [FoodController::class, 'updateFoods']);
 
+    Route::patch('/cart', [CartController::class, 'updateCart']);
+
     Route::patch('/coupon-status', [CouponController::class, 'updateCouponStatus']);
 
     Route::patch('/order-status', [OrderController::class, 'updateOrderStatus']);
@@ -61,5 +68,16 @@ Route::prefix('/update')->group(function () {
 Route::prefix('/store')->group(function () {
     Route::post('/food', [FoodController::class, 'storeFood']);
 
+    Route::post('/cart', [CartController::class, 'storeCart']);
+
+    Route::post('/order', [CartController::class, 'storeOrder']);
+
     Route::post('/coupon', [CouponController::class, 'storeCoupon']);
+
+    Route::post('/feedback', [FeedbackController::class, 'storeFeedback']);
+});
+Route::prefix('/delete')->group(function () {
+    Route::delete('/feedback', [FeedbackController::class, 'deleteFeedback']);
+
+    Route::delete('/carts', [CartController::class, 'deleteCarts']);
 });

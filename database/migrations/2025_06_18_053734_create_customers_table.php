@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('phone', 10)->nullable();
             $table->string('address', 300)->nullable();
             $table->foreignId('account_id')->constrained('accounts');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

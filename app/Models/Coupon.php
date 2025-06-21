@@ -9,6 +9,17 @@ class Coupon extends Model
 {
     use HasFactory;
     protected $table = "coupons";
+
+    protected $fillable = [
+        'name',
+        'description',
+        'min_order_value',
+        'discount',
+        'quantity',
+        'expire_date',
+        'is_public',
+    ];
+
     protected $hidden = [
         'created_at',
         'updated_at',

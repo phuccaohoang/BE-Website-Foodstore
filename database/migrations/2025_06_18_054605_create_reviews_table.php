@@ -18,7 +18,8 @@ return new class extends Migration
             $table->unsignedTinyInteger('rating');
             $table->string('text', 100)->nullable();
             $table->boolean('status')->default(1);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

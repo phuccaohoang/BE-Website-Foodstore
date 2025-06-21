@@ -22,7 +22,8 @@ return new class extends Migration
             $table->unsignedTinyInteger('discount')->default(0);
             $table->double('rating', 8, 2)->unsigned()->nullable();
             $table->unsignedTinyInteger('status')->default(1);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

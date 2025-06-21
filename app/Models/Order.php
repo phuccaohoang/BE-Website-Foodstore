@@ -9,8 +9,20 @@ class Order extends Model
 {
     use HasFactory;
     protected $table = "orders";
+
+    protected $fillable = [
+        'customer_id',
+        'phone',
+        'address',
+        'total_amount',
+        'quantity',
+        'delivery_cost',
+        'coupon_id',
+        'note',
+    ];
+
     protected $hidden = [
-        'created_at',
+        'updated_at',
     ];
 
     public function customer()

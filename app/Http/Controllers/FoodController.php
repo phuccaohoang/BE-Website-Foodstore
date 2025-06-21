@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Food;
 use Exception;
@@ -11,7 +10,7 @@ use Illuminate\Http\Request;
 
 class FoodController extends Controller
 {
-    //
+    // lay danh sach voi bo loc
     public function getFoods()
     {
         try {
@@ -68,7 +67,25 @@ class FoodController extends Controller
             ], 500);
         }
     }
-    //
+    // lay mon an theo slug
+    public function getFood()
+    {
+        try {
+            $slug = request('slug');
+            $query = Food::with('category')->where('slug', $slug);
+
+            return response()->json([
+                'status' => true,
+                'data' => $query->get(),
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    // thay doi trang thai mon an
     public function updateFoodStatus()
     {
         try {
@@ -102,7 +119,7 @@ class FoodController extends Controller
             ], 500);
         }
     }
-    //
+    // cap nhat thong tin ve mon an
     public function updateFoods()
     {
         try {
@@ -190,7 +207,7 @@ class FoodController extends Controller
             ], 500);
         }
     }
-    //
+    // them moi mon an
     public function storeFood()
     {
         try {
@@ -201,7 +218,7 @@ class FoodController extends Controller
             $name = request('name');
             $status = request('status');
 
-            $food = Food::create([
+            Food::create([
                 'name' => $name,
                 'category_id' => $category_id,
                 'description' => $description,
@@ -213,24 +230,6 @@ class FoodController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Create successful',
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-    }
-    //
-    public function getFood()
-    {
-        try {
-            $slug = request('slug');
-            $query = Food::with('category')->where('slug', $slug);
-
-            return response()->json([
-                'status' => true,
-                'data' => $query->get(),
             ], 200);
         } catch (Exception $e) {
             return response()->json([

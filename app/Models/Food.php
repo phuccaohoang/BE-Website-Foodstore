@@ -9,6 +9,18 @@ class Food extends Model
 {
     use HasFactory;
     protected $table = "foods";
+
+    protected $fillable = [
+        'name',
+        'slug',
+        'category_id',
+        'description',
+        'price',
+        'sold',
+        'discount',
+        'status',
+    ];
+
     protected $hidden = [
         'created_at',
         'updated_at',

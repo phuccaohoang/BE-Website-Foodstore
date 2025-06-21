@@ -22,7 +22,8 @@ return new class extends Migration
             $table->foreignId('coupon_id')->nullable()->constrained('coupons');
             $table->string('note', 300)->nullable();
             $table->foreignId('order_status_id')->constrained('order_status');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

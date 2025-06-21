@@ -9,8 +9,15 @@ class Feedback extends Model
 {
     use HasFactory;
     protected $table = "feedbacks";
+
+    protected $fillable = [
+        'text',
+        'review_id',
+        'administrator_id',
+    ];
+
     protected $hidden = [
-        'created_at',
+        'updated_at',
     ];
 
     public function administrator()

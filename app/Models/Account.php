@@ -13,6 +13,17 @@ class Account extends Authenticatale implements JWTSubject
     use HasFactory;
     protected $table = "accounts";
 
+    protected $fillable = [
+        'email',
+        'password',
+        'avatar',
+        'is_admin',
+    ];
+
+    protected $casts = [
+        'password' => 'hashed',
+    ];
+
     protected $hidden = [
         'password',
         'created_at',

@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('food_id')->constrained('foods');
             $table->string('img', 100)->unique();
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

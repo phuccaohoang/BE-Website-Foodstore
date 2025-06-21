@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('administrator_id')->constrained('administrators');
             $table->foreignId('review_id')->constrained('reviews');
             $table->string('text', 100);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

@@ -19,7 +19,8 @@ return new class extends Migration
             $table->unsignedTinyInteger('discount');
             $table->unsignedTinyInteger('quantity');
             $table->boolean('is_review')->default(0);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

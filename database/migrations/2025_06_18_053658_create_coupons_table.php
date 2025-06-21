@@ -21,7 +21,8 @@ return new class extends Migration
             $table->dateTime('expire_date');
             $table->boolean('is_public')->default(1);
             $table->boolean('status')->default(1);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

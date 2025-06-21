@@ -9,8 +9,16 @@ class Review extends Model
 {
     use HasFactory;
     protected $table = "reviews";
+
+    protected $fillable = [
+        'customer_id',
+        'food_id',
+        'rating',
+        'text',
+    ];
+
     protected $hidden = [
-        'created_at',
+        'updated_at',
     ];
 
     public function customer()

@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('fullname', 50);
             $table->foreignId('account_id')->constrained('accounts');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

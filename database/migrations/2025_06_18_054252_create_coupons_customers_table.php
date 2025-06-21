@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('coupon_id')->constrained('coupons');
             $table->foreignId('customer_id')->constrained('customers');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

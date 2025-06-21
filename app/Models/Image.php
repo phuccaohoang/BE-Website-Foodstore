@@ -9,6 +9,12 @@ class Image extends Model
 {
     use HasFactory;
     protected $table = "images";
+
+    protected $fillable = [
+        'food_id',
+        'img',
+    ];
+
     protected $hidden = [
         'created_at',
         'updated_at',
