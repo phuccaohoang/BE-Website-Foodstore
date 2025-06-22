@@ -22,7 +22,7 @@ class OrderController extends Controller
 
             $query = Order::with('order_details.food', 'customer', 'order_status');
 
-            if ($customer_id = 2) {
+            if ($customer_id = 0) {
 
                 $query = $query->where('customer_id', $customer_id);
             }

@@ -17,12 +17,17 @@ class ReviewController extends Controller
 
             $updated_rows = Review::whereIn('id', $list_id)->update(['status' => 0]);
 
-            if ($updated_rows > 0) {
+            if ($updated_rows) {
                 return response()->json([
                     'status' => true,
                     'message' => 'Disable successful',
                 ], 200);
             }
+
+            return response()->json([
+                'status' => false,
+                'message' => '0 row updated.',
+            ], 400);
         } catch (Exception $e) {
             return response()->json([
                 'status' => false,

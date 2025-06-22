@@ -15,6 +15,7 @@ class FeedbackController extends Controller
         try {
             $id = request('id');
             $query = Feedback::find($id);
+
             if ($query) {
                 $deleted_rows = $query->delete();
 

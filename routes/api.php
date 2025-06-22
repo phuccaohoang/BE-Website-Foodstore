@@ -5,12 +5,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderStatusController;
 use App\Http\Controllers\ReviewController;
-use App\Models\Cart;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,11 +44,17 @@ Route::prefix('/get')->group(function () {
     Route::get('/foods', [FoodController::class, 'getFoods']);
     Route::get('/food', [FoodController::class, 'getFood']);
 
+    Route::get('/categories', [CategoryController::class, 'getCategories']);
+
+    Route::get('/customers', [CustomerController::class, 'getCustomers']);
+
     Route::get('/cart', [CartController::class, 'getCart']);
 
     Route::get('/coupons', [CouponController::class, 'getCoupons']);
 
     Route::get('/orders', [OrderController::class, 'getOrders']);
+
+    Route::get('/order-status', [OrderStatusController::class, 'getOrderStatus']);
 
     Route::get('/reviews', [ReviewController::class, 'getReviews']);
 });
