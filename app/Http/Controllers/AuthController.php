@@ -45,12 +45,18 @@ class AuthController extends Controller
     //
     public function logout()
     {
-        JWTAuth::invalidate(request('jwt_token'));
-        $cookie = Cookie::forget('jwt_token');
+        try {
 
-        return response()->json([
-            'message' => 'Successfully logged out',
-        ])->withCookie($cookie);
+            JWTAuth::invalidate(request('jwt_token'));
+            $cookie = Cookie::forget('jwt_token');
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Successfully logged out',
+            ])->withCookie($cookie);
+        } catch (JWTException $e) {
+            return response()->json(['error' => 'Could not create token'], 500);
+        }
     }
     //
     public function me()

@@ -39,53 +39,69 @@ Route::middleware('jwt.cookie')->group(function () {
 });
 
 Route::prefix('/get')->group(function () {
-    Route::get('/accounts', [AccountController::class, 'getAccounts']);
 
     Route::get('/foods', [FoodController::class, 'getFoods']);
     Route::get('/food', [FoodController::class, 'getFood']);
 
     Route::get('/categories', [CategoryController::class, 'getCategories']);
 
-    Route::get('/customers', [CustomerController::class, 'getCustomers']);
 
-    Route::get('/cart', [CartController::class, 'getCart'])->middleware('jwt.cookie');
 
-    Route::get('/coupons', [CouponController::class, 'getCoupons']);
 
-    Route::get('/orders', [OrderController::class, 'getOrders']);
 
     Route::get('/order-status', [OrderStatusController::class, 'getOrderStatus']);
 
     Route::get('/reviews', [ReviewController::class, 'getReviews']);
 });
-Route::prefix('/update')->group(function () {
-    Route::patch('/account-status', [AccountController::class, 'updateAccountStatus']);
 
-    Route::patch('/food-status', [FoodController::class, 'updateFoodStatus']);
-    Route::put('/foods', [FoodController::class, 'updateFoods']);
+Route::middleware('jwt.cookie')->group(function () {
 
-    Route::patch('/cart', [CartController::class, 'updateCart']);
+    Route::prefix('/get')->group(function () {
+        Route::get('/accounts', [AccountController::class, 'getAccounts']);
 
-    Route::patch('/coupon-status', [CouponController::class, 'updateCouponStatus']);
+        Route::get('/customers', [CustomerController::class, 'getCustomers']);
 
-    Route::patch('/order-status', [OrderController::class, 'updateOrderStatus']);
-    Route::put('/cancel-order', [OrderController::class, 'cancelOrder']);
+        Route::get('/cart', [CartController::class, 'getCart']);
+        Route::get('/cart-payment', [CartController::class, 'getCartPayment']);
 
-    Route::patch('/disable-review', [ReviewController::class, 'disableReview']);
-});
-Route::prefix('/store')->group(function () {
-    Route::post('/food', [FoodController::class, 'storeFood']);
+        Route::get('/coupons', [CouponController::class, 'getCoupons']);
 
-    Route::post('/cart', [CartController::class, 'storeCart'])->middleware('jwt.cookie');
+        Route::get('/coupons-customer', [CouponController::class, 'getCouponsCustomer']);
 
-    Route::post('/order', [CartController::class, 'storeOrder']);
+        Route::get('/orders', [OrderController::class, 'getOrders']);
+    });
 
-    Route::post('/coupon', [CouponController::class, 'storeCoupon']);
+    Route::prefix('/update')->group(function () {
+        Route::patch('/account-status', [AccountController::class, 'updateAccountStatus']);
 
-    Route::post('/feedback', [FeedbackController::class, 'storeFeedback']);
-});
-Route::prefix('/delete')->group(function () {
-    Route::delete('/feedback', [FeedbackController::class, 'deleteFeedback']);
+        Route::patch('/food-status', [FoodController::class, 'updateFoodStatus']);
+        Route::put('/foods', [FoodController::class, 'updateFoods']);
 
-    Route::delete('/carts', [CartController::class, 'deleteCarts']);
+        Route::patch('/cart', [CartController::class, 'updateCart']);
+
+        Route::patch('/coupon-status', [CouponController::class, 'updateCouponStatus']);
+
+        Route::patch('/order-status', [OrderController::class, 'updateOrderStatus']);
+        Route::put('/cancel-order', [OrderController::class, 'cancelOrder']);
+
+        Route::patch('/disable-review', [ReviewController::class, 'disableReview']);
+    });
+
+    Route::prefix('/store')->group(function () {
+        Route::post('/food', [FoodController::class, 'storeFood']);
+
+        Route::post('/cart', [CartController::class, 'storeCart']);
+
+        Route::post('/order', [OrderController::class, 'storeOrder']);
+
+        Route::post('/coupon', [CouponController::class, 'storeCoupon']);
+
+        Route::post('/feedback', [FeedbackController::class, 'storeFeedback']);
+    });
+
+    Route::prefix('/delete')->group(function () {
+        Route::delete('/feedback', [FeedbackController::class, 'deleteFeedback']);
+
+        Route::delete('/carts', [CartController::class, 'deleteCarts']);
+    });
 });

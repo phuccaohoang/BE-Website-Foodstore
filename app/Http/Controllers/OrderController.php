@@ -21,15 +21,15 @@ class OrderController extends Controller
             $fullname = request('fullname');
 
             $query = Order::with('order_details.food', 'customer', 'order_status');
+            /** @var \App\Models\Account $account */
+            $account = auth()->user();
 
-            if ($customer_id = 0) {
+            if ($account->is_admin === 0) {
+                $account = $account->load('customers');
+                $customer_id = $account->customers[0]->id;
 
                 $query = $query->where('customer_id', $customer_id);
             }
-            // if (auth()->user()->is_admin === 0) {
-            //     $customer_id = auth()->user()->customers[0]->id;
-            //     $query = $query->where('customer_id', $customer_id);
-            // }
 
             if (!empty($order_status_id)) {
                 $query = $query->where('order_status_id', $order_status_id);
@@ -125,8 +125,10 @@ class OrderController extends Controller
     public function storeOrder()
     {
         try {
-            $customer_id = 1;
-            // $customer_id = auth()->user()->customers[0]->id;
+            /** @var \App\Models\Account $account */
+            $account = auth()->user();
+            $account = $account->load('customers');
+            $customer_id = $account->customers[0]->id;
             $phone = request('phone');
             $address = request('address');
             $delivery_cost = request('delivery_cost');
@@ -183,6 +185,7 @@ class OrderController extends Controller
                     'note' => $note,
                     'total_amount' => $totalAmount,
                     'quantity' => $totalQuantity,
+                    'order_status_id' => 1,
                 ]);
 
                 foreach ($orderDetailsToInsert as &$item) {

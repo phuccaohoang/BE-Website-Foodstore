@@ -122,4 +122,28 @@ class CouponController extends Controller
             ], 500);
         }
     }
+    //
+    public function getCouponsCustomer()
+    {
+        try {
+            /** @var \App\Models\Account $account */
+            $account = auth()->user();
+
+            $query = Coupon::where('status', 1)->where('is_public', 1)->orderBy('discount', 'desc');
+            if ($account) {
+                $account = $account->load('customers');
+                $id = $account->customers[0]->id;
+            }
+
+            return response()->json([
+                'status' => true,
+                'data' => $query->get(),
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

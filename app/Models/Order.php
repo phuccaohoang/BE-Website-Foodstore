@@ -19,6 +19,7 @@ class Order extends Model
         'delivery_cost',
         'coupon_id',
         'note',
+        'order_status_id',
     ];
 
     protected $hidden = [

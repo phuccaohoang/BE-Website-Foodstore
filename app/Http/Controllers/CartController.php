@@ -32,6 +32,32 @@ class CartController extends Controller
             ], 500);
         }
     }
+    //
+    public function getCartPayment()
+    {
+        try {
+            $list_id = request('list_id');
+            $query = Cart::with('food')->whereIn('id', $list_id);
+            $payment = $query->get();
+            $total_money = 0;
+            foreach ($payment as $item) {
+                $total_money += ((100 - $item->food->discount) / 100) * $item->food->price * $item->quantity;
+            }
+
+            return response()->json([
+                'status' => true,
+                'data' => [
+                    'carts' => $payment,
+                    'total_money' => $total_money,
+                ],
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
     // thay doi so luong mon an
     public function updateCart()
     {
