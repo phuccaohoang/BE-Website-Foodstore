@@ -13,9 +13,13 @@ class CartController extends Controller
     public function getCart()
     {
         try {
-            $id = 1;
-            // $id = auth()->user()->customers[0]->id;
-            $query = Cart::with('food.images')->where('customer_id', $id);
+            /** @var \App\Models\Account $account */
+
+            $account = auth()->user();
+
+
+            $account = $account->load('customers');
+            $query = Cart::with('food.images')->where('customer_id', $account->customers[0]->id);
 
             return response()->json([
                 'status' => true,
@@ -32,8 +36,7 @@ class CartController extends Controller
     public function updateCart()
     {
         try {
-            $id = 1;
-            // $id = auth()->user()->customers[0]->id;
+            $id = request('id');
 
             $quantity = request('quantity');
 
@@ -60,9 +63,11 @@ class CartController extends Controller
     public function storeCart()
     {
         try {
-            $customer_id = 1;
-            // $customer_id = auth()->user()->customers[0]->id;
+            /** @var \App\Models\Account $account */
 
+            $account = auth()->user();
+            $account = $account->load('customers');
+            $customer_id = $account->customers[0]->id;
             $food_id = request('food_id');
             $quantity = request('quantity');
 
