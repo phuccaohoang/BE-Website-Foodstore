@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use App\Models\Food;
 use App\Models\Order;
 use App\Models\OrderDetail;
@@ -132,34 +133,31 @@ class OrderController extends Controller
             $phone = request('phone');
             $address = request('address');
             $delivery_cost = request('delivery_cost');
-            $coupon_id = request('coupon_id');
+            $coupon_id = request('coupon_id') === 0 ? null : request('coupon_id');
             $note = request('note');
-            $order_details = request('order_details');
+            $cart_ids = request('cart_ids');
 
-            if (!empty($phone) && !empty($address) && !empty($order_details) && is_array($order_details)) {
+            if (!empty($phone) && !empty($address) && !empty($cart_ids) && is_array($cart_ids)) {
 
                 DB::beginTransaction();
                 $totalAmount = 0;
                 $totalQuantity = 0;
+
+                $order_details = Cart::with('food')->whereIn('id', $cart_ids)->get();
+                if (count($order_details) === 0) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Request invalid.',
+                    ], 400);
+                }
+
                 $orderDetailsToInsert = [];
 
-                $food_ids = collect($order_details)->pluck('food_id')->unique()->toArray();
-                $foods = Food::whereIn('id', $food_ids)->get()->keyBy('id');
-
                 foreach ($order_details as $item) {
-                    $food_id = $item['food_id'];
-                    $quantity = $item['quantity'];
 
-                    if (!isset($foods[$food_id])) {
-
-                        DB::rollBack();
-                        return response()->json([
-                            'status' => false,
-                            'message' => 'Một số món ăn không hợp lệ hoặc không tồn tại.',
-                        ], 400);
-                    }
-
-                    $food = $foods[$food_id];
+                    $quantity = $item->quantity;
+                    $food = $item->food;
                     $price = $food->price;
                     $discount = $food->discount;
 
@@ -201,6 +199,7 @@ class OrderController extends Controller
                         'message' => 'Không thể lưu chi tiết đơn hàng. Vui lòng thử lại.',
                     ], 500);
                 }
+                Cart::whereIn('id', $cart_ids)->delete();
 
                 DB::commit();
                 return response()->json([

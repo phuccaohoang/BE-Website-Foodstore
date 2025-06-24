@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Account;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Contracts\Providers\JWT;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -38,8 +41,11 @@ class AuthController extends Controller
                 'message' => 'Login Successful',
                 'access_token' => $token,
             ], 200)->withCookie($cookie);
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'Could not create token'], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
     //
@@ -54,8 +60,11 @@ class AuthController extends Controller
                 'status' => true,
                 'message' => 'Successfully logged out',
             ])->withCookie($cookie);
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'Could not create token'], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
     //
@@ -86,8 +95,11 @@ class AuthController extends Controller
                     'info' => $user,
                 ],
             ], 200);
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'Could not create token'], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
     //
@@ -115,8 +127,49 @@ class AuthController extends Controller
                 'message' => 'Refresh token',
                 'access_token' => $newToken,
             ], 200)->withCookie($cookie);
-        } catch (JWTException $e) {
-            return response()->json(['error' => 'Could not create token'], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    // thay doi mat khau
+    public function updatePassword()
+    {
+        try {
+            $account = auth()->user();
+            $account_id = $account->id;
+            $password = request('password');
+            $oldPassword = request('old_password');
+
+            Account::where('id', $account_id)->update([
+                'password' => Hash::make($password),
+            ]);
+
+            if (!Hash::check($oldPassword, $account->password)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Mật khẩu cũ không chính xác.',
+                ], 400);
+            }
+            if (Hash::check($password, $account->password)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Mật khẩu mới không được trùng với mật khẩu cũ.',
+                ], 400);
+            }
+
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Updated successful.',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
 }

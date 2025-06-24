@@ -36,6 +36,8 @@ Route::middleware('jwt.cookie')->group(function () {
     Route::post('/auth/refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
 
     Route::get('/me', [AuthController::class, 'me']);
+
+    Route::patch('/auth/update-password', [AuthController::class, 'updatePassword']);
 });
 
 Route::prefix('/get')->group(function () {
@@ -44,10 +46,6 @@ Route::prefix('/get')->group(function () {
     Route::get('/food', [FoodController::class, 'getFood']);
 
     Route::get('/categories', [CategoryController::class, 'getCategories']);
-
-
-
-
 
     Route::get('/order-status', [OrderStatusController::class, 'getOrderStatus']);
 
@@ -74,6 +72,8 @@ Route::middleware('jwt.cookie')->group(function () {
     Route::prefix('/update')->group(function () {
         Route::patch('/account-status', [AccountController::class, 'updateAccountStatus']);
 
+        Route::put('/customer', [CustomerController::class, 'updateCustomer']);
+
         Route::patch('/food-status', [FoodController::class, 'updateFoodStatus']);
         Route::put('/foods', [FoodController::class, 'updateFoods']);
 
@@ -97,6 +97,8 @@ Route::middleware('jwt.cookie')->group(function () {
         Route::post('/coupon', [CouponController::class, 'storeCoupon']);
 
         Route::post('/feedback', [FeedbackController::class, 'storeFeedback']);
+
+        Route::post('/review', [ReviewController::class, 'storeReview']);
     });
 
     Route::prefix('/delete')->group(function () {

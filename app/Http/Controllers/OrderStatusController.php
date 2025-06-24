@@ -13,7 +13,16 @@ class OrderStatusController extends Controller
     public function getOrderStatus()
     {
         try {
-            $query = OrderStatus::where('id', '!=', 5);
+            $all = request('all', 0);
+            if (!$all) {
+                $query = OrderStatus::where('id', '!=', 5);
+                return response()->json([
+                    'status' => true,
+                    'data' => $query->get(),
+                ], 200);
+            }
+
+            $query = OrderStatus::query();
             return response()->json([
                 'status' => true,
                 'data' => $query->get(),
