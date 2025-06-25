@@ -72,7 +72,7 @@ class FoodController extends Controller
     {
         try {
             $slug = request('slug');
-            $query = Food::with('category')->where('slug', $slug);
+            $query = Food::with('category', 'reviews.customer', 'reviews.feedbacks.administrator')->where('slug', $slug);
 
             return response()->json([
                 'status' => true,
