@@ -84,11 +84,12 @@ class AuthController extends Controller
                     'fullname' => $account->administrators[0]->fullname
                 ];
             } else {
-                $account = $account->load('customers');
+                $account = $account->load('customers.carts');
                 $user = [
                     'fullname' => $account->customers[0]->fullname,
                     'address' => $account->customers[0]->address,
                     'phone' => $account->customers[0]->phone,
+                    'has_carts' => count($account->customers[0]->carts),
                 ];
             }
             return response()->json([
@@ -97,7 +98,7 @@ class AuthController extends Controller
                     'email' => $account->email,
                     'avatar' => $account->avatar,
                     'is_admin' => $account->is_admin,
-                    'info' => $user,
+                    ...$user,
                 ],
             ], 200);
         } catch (Exception $e) {
