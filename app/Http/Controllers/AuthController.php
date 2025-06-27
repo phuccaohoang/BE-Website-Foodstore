@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Mail\forgotPasswordMail;
+use App\Mail\RegisterMail;
 use App\Models\Account;
+use App\Models\Customer;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Tymon\JWTAuth\Contracts\Providers\JWT;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -160,6 +165,103 @@ class AuthController extends Controller
                 ], 400);
             }
 
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Updated successful.',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // dang ky tai kkhoan
+    public function register()
+    {
+
+        try {
+            $fullname = request('fullname');
+            $email = request('email');
+            $phone = request('phone');
+            $address = request('address');
+            $check = Account::where('email', $email)->first();
+            if ($check) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Request invalid.',
+                ], 400);
+            }
+            $password = Str::random(8);
+            $account = Account::create([
+                'email' => $email,
+                'password' => Hash::make($password),
+                'is_admin' => 0,
+                'avatar' => null,
+            ]);
+            Customer::create([
+                'fullname' => $fullname,
+                'phone' => $phone,
+                'address' => $address,
+                'account_id' => $account->id,
+            ]);
+
+            Mail::to($email)->send(new RegisterMail($fullname, $password));
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Store successful.',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    // quen mat khau
+    public function forgotPassword()
+    {
+
+        try {
+            $email = request('email');
+            $account = Account::where('email', $email)->first();
+            if (!$account) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Request invalid.',
+                ], 400);
+            }
+            $password = Str::random(8);
+            Account::where('email', $email)->update([
+                'password' => Hash::make($password),
+            ]);
+
+            Mail::to($email)->send(new forgotPasswordMail($account->email, $password));
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Store successful.',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    // avatar 
+    public function updateAvatar()
+    {
+
+        try {
+            $file = request()->file('image');
+            $path = $file->store('avatars');
+            Account::where('id', auth()->user()->id)->update([
+                'avatar' => $path
+            ]);
 
             return response()->json([
                 'status' => true,

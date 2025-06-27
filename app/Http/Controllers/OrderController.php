@@ -74,16 +74,24 @@ class OrderController extends Controller
                     'message' => 'Request invalid',
                 ], 400);
             }
+            DB::beginTransaction();
+            Order::whereIn('id', $list_id)->update(['order_status_id' => $order_status_id]);
 
-            $updated_rows = Order::whereIn('id', $list_id)->update(['order_status_id' => $order_status_id]);
-
-            if ($updated_rows) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Update successful',
-                ], 200);
+            foreach ($list_id as $id) {
+                $order = Order::with('order_details')->where('id', $id)->first();
+                foreach ($order->order_details as $orderDetail) {
+                    $food = Food::find($orderDetail->food_id);
+                    $food->sold += $orderDetail->quantity;
+                    $food->save();
+                }
             }
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'message' => 'Update successful',
+            ], 200);
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
@@ -200,6 +208,8 @@ class OrderController extends Controller
                     ], 500);
                 }
                 Cart::whereIn('id', $cart_ids)->delete();
+
+
 
                 DB::commit();
                 return response()->json([

@@ -29,9 +29,14 @@ use App\Http\Controllers\ReviewController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 
+Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 
 Route::middleware('jwt.cookie')->group(function () {
+
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+
+    Route::post('/update/avatar', [AuthController::class, 'updateAvatar']);
 
     Route::post('/auth/refresh', [AuthController::class, 'refresh'])->name('auth.refresh');
 
@@ -76,6 +81,7 @@ Route::middleware('jwt.cookie')->group(function () {
 
         Route::patch('/food-status', [FoodController::class, 'updateFoodStatus']);
         Route::put('/foods', [FoodController::class, 'updateFoods']);
+        Route::post('/food', [FoodController::class, 'updateFood']);
 
         Route::patch('/cart', [CartController::class, 'updateCart']);
 

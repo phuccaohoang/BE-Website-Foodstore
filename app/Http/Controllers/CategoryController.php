@@ -13,8 +13,8 @@ class CategoryController extends Controller
     public function getCategories()
     {
         try {
-            $status = request('status', 1);
-            $query = Category::where('status', $status);
+
+            $query = Category::query();
             return response()->json([
                 'status' => true,
                 'data' => $query->get(),

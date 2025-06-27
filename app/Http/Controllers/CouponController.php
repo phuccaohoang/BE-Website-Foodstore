@@ -20,7 +20,6 @@ class CouponController extends Controller
             $description = request('description');
             $name = request('name');
             $expire_date = request('expire_date');
-            $status = request('status');
             $is_public = request('is_public');
 
             $coupon = Coupon::create([
@@ -29,14 +28,14 @@ class CouponController extends Controller
                 'description' => $description,
                 'discount' => $discount,
                 'min_order_value' => $min_order_value,
-                'status' => $status,
+                'status' => 1,
                 'expire_date' => $expire_date,
                 'is_public' => $is_public,
             ]);
 
             if ($is_public === 0) {
-                $list_id = request('list_id');
-                $coupon->customers()->actach($list_id);
+                $list_id = request('customers');
+                $coupon->customers()->attach($list_id);
             }
 
             return response()->json([
@@ -128,12 +127,15 @@ class CouponController extends Controller
         try {
             /** @var \App\Models\Account $account */
             $account = auth()->user();
+            $account = $account->load('customers');
+            $id = $account->customers[0]->id;
+            $query = Coupon::where('status', 1)->where('quantity', '>', 0)->where('expire_date', '>=', now())
+                ->where(function ($query) use ($id) {
+                    $query->where('is_public', 1)->orWhereHas('customers', function ($query) use ($id) {
+                        $query->where('customer_id', $id);
+                    });
+                })->orderBy('discount', 'asc');
 
-            $query = Coupon::where('status', 1)->where('is_public', 1)->orderBy('discount', 'desc');
-            if ($account) {
-                $account = $account->load('customers');
-                $id = $account->customers[0]->id;
-            }
 
             return response()->json([
                 'status' => true,

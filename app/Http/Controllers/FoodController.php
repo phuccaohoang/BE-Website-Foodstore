@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Food;
+use App\Models\Image;
 use Exception;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FoodController extends Controller
 {
@@ -20,7 +23,7 @@ class FoodController extends Controller
             $sort_by = request('sort_by');
 
 
-            $query = Food::with('category');
+            $query = Food::with('category', 'images');
 
             if (!empty($name)) {
                 $query = $query->where('name', 'LIKE', '%' . $name . '%');
@@ -98,8 +101,11 @@ class FoodController extends Controller
                     'message' => 'Request invalid',
                 ], 400);
             }
-
+            DB::beginTransaction();
             $updated_rows = Food::whereIn('id', $list_id)->update(['status' => $status]);
+
+            if (count($list_id) === 1) {
+            }
 
             if ($updated_rows > 0) {
                 return response()->json([
@@ -109,10 +115,11 @@ class FoodController extends Controller
             }
 
             return response()->json([
-                'status' => true,
+                'status' => false,
                 'message' => '0 row updated',
-            ], 200);
+            ], 400);
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
@@ -122,6 +129,7 @@ class FoodController extends Controller
     // cap nhat thong tin ve mon an
     public function updateFoods()
     {
+
         try {
             $list_id = request('list_id');
             $category_id = request('category_id');
@@ -139,68 +147,122 @@ class FoodController extends Controller
                 ], 400);
             }
 
-            if (count($list_id) === 1) {
-                $name = request('name');
-                $description = request('description');
-                if (!empty($name)) {
-                    $updates['name'] = $name;
-                }
-                if (!empty($description)) {
-                    $updates['description'] = $description;
-                }
-            }
 
 
-            if (!empty($category_id)) {
+            if (!empty($category_id) && is_numeric($category_id) && $category_id > 0) {
                 $categoryExists = Category::where('id', $category_id)->exists();
                 if ($categoryExists) {
                     $updates['category_id'] = $category_id;
                 } else {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Request invalid.',
+                        'message' => 'Request invalid 1.',
                     ], 400);
                 }
             }
 
-            if (isset($price) && $price !== '') {
-                if (is_numeric($price) && $price >= 0) {
-                    $updates['price'] = $price;
-                } else {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Request invalid.',
-                    ], 400);
-                }
+            if (isset($price) && $price !== '' && is_numeric($price) && $price >= 0) {
+                $updates['price'] = $price;
             }
 
-            if (isset($discount) && $discount !== '') {
-                if (is_numeric($discount) && $discount >= 0 && $discount <= 100) {
-                    $updates['discount'] = $discount;
-                } else {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Request invalid.',
-                    ], 400);
-                }
+            if (isset($discount) && $discount !== '' && is_numeric($discount) && $discount >= 0 && $discount <= 100) {
+                $updates['discount'] = $discount;
             }
 
-            if (empty($updates)) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Request invalid.',
-                ], 400);
+
+            if (!empty($updates)) {
+
+                Food::whereIn('id', $list_id)->update($updates);
             }
 
-            $updated_rows = Food::whereIn('id', $list_id)->update($updates);
-
-            if ($updated_rows > 0) {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Update successful',
-                ], 200);
-            }
+            return response()->json([
+                'status' => true,
+                'message' => 'Update successful',
+            ], 200);
         } catch (Exception $e) {
+
+            return response()->json([
+                'status' => $list_id,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    //cap nhat mot foof
+    public function updateFood()
+    {
+
+        try {
+            $id = request('id');
+            $category_id = request('category_id');
+            $price = request('price');
+            $discount = request('discount');
+
+
+            $updates = [];
+
+
+
+            $name = request('name');
+            $description = request('description');
+
+            $description = is_string($description) ? trim($description) : '';
+            $name = is_string($name) ? trim($name) : '';
+            if (!empty($name)) {
+                $updates['name'] = $name;
+            }
+            if (!empty($description)) {
+                $updates['description'] = $description;
+            }
+
+
+
+            if (!empty($category_id) && is_numeric($category_id) && $category_id > 0) {
+                $categoryExists = Category::where('id', $category_id)->exists();
+                if ($categoryExists) {
+                    $updates['category_id'] = $category_id;
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Request invalid 1.',
+                    ], 400);
+                }
+            }
+
+            if (isset($price) && $price !== '' && is_numeric($price) && $price >= 0) {
+                $updates['price'] = $price;
+            }
+
+            if (isset($discount) && $discount !== '' && is_numeric($discount) && $discount >= 0 && $discount <= 100) {
+                $updates['discount'] = $discount;
+            }
+
+            DB::beginTransaction();
+            if (!empty($updates)) {
+
+                Food::where('id', $id)->update($updates);
+            }
+
+
+            if (request()->hasFile('images')) {
+
+                $images = request()->file('images');
+                Image::where('food_id', $id)->delete();
+                foreach ($images as $img) {
+                    $path = $img->store('foods');
+                    Image::create([
+                        'food_id' => $id,
+                        'img' => $path,
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'message' => 'Update successful',
+            ], 200);
+        } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
@@ -217,21 +279,33 @@ class FoodController extends Controller
             $description = request('description');
             $name = request('name');
             $status = request('status');
-
-            Food::create([
+            DB::beginTransaction();
+            $food = Food::create([
                 'name' => $name,
                 'category_id' => $category_id,
+                'slug' => Str::slug($name),
                 'description' => $description,
                 'discount' => $discount,
                 'price' => $price,
                 'status' => $status,
             ]);
 
+            $files = request()->file('images');
+            foreach ($files as $file) {
+                $path = $file->store('foods');
+                Image::create([
+                    'food_id' => $food->id,
+                    'img' => $path,
+                ]);
+            }
+
+            DB::commit();
             return response()->json([
                 'status' => true,
                 'message' => 'Create successful',
             ], 200);
         } catch (Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),

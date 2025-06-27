@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('coupons', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 200)->unique();
+            $table->string('name', 200);
             $table->string('description', 200);
             $table->decimal('min_order_value', 10, 2)->unsigned();
             $table->decimal('discount', 10, 2)->unsigned();
