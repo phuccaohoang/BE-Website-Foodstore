@@ -6,11 +6,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderDetailController;
 use App\Http\Controllers\OrderStatusController;
 use App\Http\Controllers\ReviewController;
 
@@ -45,6 +47,8 @@ Route::middleware('jwt.cookie')->group(function () {
     Route::patch('/auth/update-password', [AuthController::class, 'updatePassword']);
 });
 
+Route::post('/call-chatbot', [ChatbotController::class, 'callAIChat']);
+
 Route::prefix('/get')->group(function () {
 
     Route::get('/foods', [FoodController::class, 'getFoods']);
@@ -54,7 +58,17 @@ Route::prefix('/get')->group(function () {
 
     Route::get('/order-status', [OrderStatusController::class, 'getOrderStatus']);
 
+
     Route::get('/reviews', [ReviewController::class, 'getReviews']);
+
+
+    Route::get('/statistics-foods', [OrderDetailController::class, 'statisticsFoods']);
+
+    Route::get('/statistics-customers', [OrderController::class, 'statisticsCustomers']);
+
+    Route::get('/statistics-orders', [OrderController::class, 'statisticsOrders']);
+
+    Route::get('/statistics-revenue', [OrderController::class, 'statisticsRevennue']);
 });
 
 Route::middleware('jwt.cookie')->group(function () {

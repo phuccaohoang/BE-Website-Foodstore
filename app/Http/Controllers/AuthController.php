@@ -259,7 +259,8 @@ class AuthController extends Controller
 
         try {
             $file = request()->file('image');
-            $path = $file->store('avatars');
+            $extension = $file->getClientOriginalExtension();
+            $path = $file->storeAs('avatars', auth()->user()->id . '.' . $extension);
             Account::where('id', auth()->user()->id)->update([
                 'avatar' => $path
             ]);

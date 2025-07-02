@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('delivery_cost', 10, 2)->unsigned();
             $table->foreignId('coupon_id')->nullable()->constrained('coupons');
             $table->string('note', 300)->nullable();
+            $table->boolean('is_payment')->default(0);
             $table->foreignId('order_status_id')->constrained('order_status');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

@@ -18,9 +18,11 @@ class FoodController extends Controller
     {
         try {
             $name = request('name');
-            $category = request('category');
+            $category = request('category_id');
             $status = request('status');
             $sort_by = request('sort_by');
+
+
 
 
             $query = Food::with('category', 'images');
@@ -31,7 +33,7 @@ class FoodController extends Controller
             if (!empty($category)) {
                 $query = $query->where('category_id', $category);
             }
-            if ($status === 1 || $status === 0) {
+            if ($status == 1 || $status == 0) {
                 $query = $query->where('status', $status);
             }
             switch ($sort_by) {
@@ -40,6 +42,12 @@ class FoodController extends Controller
                     break;
                 case 'sold_desc':
                     $query->orderBy('sold', 'desc');
+                    break;
+                case 'discount_asc':
+                    $query->orderBy('discount', 'asc');
+                    break;
+                case 'discount_desc':
+                    $query->orderBy('discount', 'desc');
                     break;
                 case 'price_asc':
                     $query->orderBy('price', 'asc');
@@ -58,10 +66,22 @@ class FoodController extends Controller
                     break;
             }
 
+            $page = request('page', 1);
+            $per_page = request('per_page', 4);
+            $total = $query->count();
+            $last_page = ceil($total / $per_page);
+            $query = $query->skip(($page - 1) * $per_page)->take($per_page);
+
 
             return response()->json([
                 'status' => true,
                 'data' => $query->get(),
+                'page' => [
+                    'current_page' => (int)$page,
+                    'last_page' => $last_page,
+                    'per_page' => (int)$per_page,
+                    'total' => $total,
+                ],
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -75,7 +95,7 @@ class FoodController extends Controller
     {
         try {
             $slug = request('slug');
-            $query = Food::with('category', 'reviews.customer', 'reviews.feedbacks.administrator')->where('slug', $slug);
+            $query = Food::with('category', 'reviews.customer.account', 'reviews.feedbacks.administrator.account', 'images')->where('slug', $slug);
 
             return response()->json([
                 'status' => true,
@@ -95,17 +115,16 @@ class FoodController extends Controller
             $list_id = request('list_id');
             $status = request('status');
 
-            if (empty($list_id) || !is_array($list_id) || ($status !== 1 && $status !== 0)) {
+            if (empty($list_id) || !is_array($list_id) || ($status != 1 && $status != 0)) {
                 return response()->json([
                     'status' => false,
                     'message' => 'Request invalid',
                 ], 400);
             }
-            DB::beginTransaction();
+
             $updated_rows = Food::whereIn('id', $list_id)->update(['status' => $status]);
 
-            if (count($list_id) === 1) {
-            }
+
 
             if ($updated_rows > 0) {
                 return response()->json([
@@ -119,7 +138,7 @@ class FoodController extends Controller
                 'message' => '0 row updated',
             ], 400);
         } catch (Exception $e) {
-            DB::rollBack();
+
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
@@ -247,12 +266,15 @@ class FoodController extends Controller
 
                 $images = request()->file('images');
                 Image::where('food_id', $id)->delete();
-                foreach ($images as $img) {
-                    $path = $img->store('foods');
+                $idx = 0;
+                foreach ($images as $file) {
+                    $extension = $file->getClientOriginalExtension();
+                    $path = $file->storeAs('foods', $id . '-' . $idx . '.' . $extension);
                     Image::create([
                         'food_id' => $id,
                         'img' => $path,
                     ]);
+                    $idx += 1;
                 }
             }
 
@@ -291,12 +313,16 @@ class FoodController extends Controller
             ]);
 
             $files = request()->file('images');
+
+            $idx = 0;
             foreach ($files as $file) {
-                $path = $file->store('foods');
+                $extension = $file->getClientOriginalExtension();
+                $path = $file->storeAs('foods', $food->id . '-' . $idx . '.' . $extension);
                 Image::create([
                     'food_id' => $food->id,
                     'img' => $path,
                 ]);
+                $idx += 1;
             }
 
             DB::commit();

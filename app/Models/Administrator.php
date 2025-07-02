@@ -14,7 +14,7 @@ class Administrator extends Model
         'updated_at',
     ];
 
-    public function administrator()
+    public function account()
     {
         return $this->belongsTo(Account::class);
     }

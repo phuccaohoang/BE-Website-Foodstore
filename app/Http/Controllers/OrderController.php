@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
+use App\Models\Coupon;
+use App\Models\Customer;
 use App\Models\Food;
 use App\Models\Order;
 use App\Models\OrderDetail;
@@ -77,14 +79,21 @@ class OrderController extends Controller
             DB::beginTransaction();
             Order::whereIn('id', $list_id)->update(['order_status_id' => $order_status_id]);
 
-            foreach ($list_id as $id) {
-                $order = Order::with('order_details')->where('id', $id)->first();
-                foreach ($order->order_details as $orderDetail) {
-                    $food = Food::find($orderDetail->food_id);
-                    $food->sold += $orderDetail->quantity;
-                    $food->save();
+            if ($order_status_id === 4) {
+
+                foreach ($list_id as $id) {
+                    $order = Order::with('order_details')->where('id', $id)->first();
+                    foreach ($order->order_details as $orderDetail) {
+                        $food = Food::find($orderDetail->food_id);
+                        $food->sold += $orderDetail->quantity;
+                        $food->save();
+                    }
                 }
             }
+            if ($order_status_id === 3) {
+                Order::whereIn('id', $list_id)->update(['is_payment' => 1]);
+            }
+
             DB::commit();
             return response()->json([
                 'status' => true,
@@ -143,6 +152,7 @@ class OrderController extends Controller
             $delivery_cost = request('delivery_cost');
             $coupon_id = request('coupon_id') === 0 ? null : request('coupon_id');
             $note = request('note');
+            $is_payment = request('is_payment', 0);
             $cart_ids = request('cart_ids');
 
             if (!empty($phone) && !empty($address) && !empty($cart_ids) && is_array($cart_ids)) {
@@ -191,6 +201,7 @@ class OrderController extends Controller
                     'note' => $note,
                     'total_amount' => $totalAmount,
                     'quantity' => $totalQuantity,
+                    'is_payment' => $is_payment,
                     'order_status_id' => 1,
                 ]);
 
@@ -207,7 +218,14 @@ class OrderController extends Controller
                         'message' => 'Không thể lưu chi tiết đơn hàng. Vui lòng thử lại.',
                     ], 500);
                 }
+                if ($coupon_id) {
+                    $coupon = Coupon::where('id', $coupon_id)->first();
+                    $coupon->quantity -= 1;
+                    $coupon->save();
+                }
                 Cart::whereIn('id', $cart_ids)->delete();
+
+
 
 
 
@@ -224,6 +242,87 @@ class OrderController extends Controller
             ], 400);
         } catch (Exception $e) {
             DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    //
+
+    //
+    public function statisticsCustomers()
+    {
+        try {
+            $start_date = request('start_date');
+            $end_date = request('end_date');
+
+            $query = Order::select('customer_id', DB::raw('SUM(total_amount) as total_money_orders'), DB::raw('COUNT(*) as total_quantity_orders'));
+            if ($start_date && $end_date) {
+                $query->whereBetween('created_at', [$start_date, $end_date]);
+            }
+            $query = $query->groupBy('customer_id')->orderBy('total_money_orders', 'desc')->with('customer');
+
+            return response()->json([
+                'status' => true,
+                'data' => $query->get(),
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    //
+    public function statisticsOrders()
+    {
+        try {
+            $start_date = request('start_date');
+            $end_date = request('end_date');
+
+            $query = Order::select('order_status_id', DB::raw('COUNT(*) as total_orders'));
+            if ($start_date && $end_date) {
+                $query->whereBetween('created_at', [$start_date, $end_date]);
+            }
+            $query = $query->groupBy('order_status_id')->with('order_status');
+
+            return response()->json([
+                'status' => true,
+                'data' => $query->get(),
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    //
+    public function statisticsRevennue()
+    {
+        try {
+            $start_date = request('start_date');
+            $end_date = request('end_date');
+
+            $query = Order::select(
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('SUM(total_amount) as total_revenue'),
+                DB::raw('COUNT(*) as total_orders'),
+            );
+            if ($start_date && $end_date) {
+                $query->whereBetween('created_at', [$start_date, $end_date]);
+            }
+            $query = $query->where('order_status_id', 4)->groupBy(DB::raw('YEAR(created_at)'), DB::raw('MONTH(created_at)'))
+                ->orderBy(DB::raw('YEAR(created_at)'), 'desc')
+                ->orderBy(DB::raw('MONTH(created_at)'), 'desc');
+
+            return response()->json([
+                'status' => true,
+                'data' => $query->get(),
+            ], 200);
+        } catch (Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),

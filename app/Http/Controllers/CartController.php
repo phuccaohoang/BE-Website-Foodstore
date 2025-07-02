@@ -37,7 +37,7 @@ class CartController extends Controller
     {
         try {
             $list_id = request('list_id');
-            $query = Cart::with('food')->whereIn('id', $list_id);
+            $query = Cart::with('food.images')->whereIn('id', $list_id);
             $payment = $query->get();
             $total_money = 0;
             foreach ($payment as $item) {

@@ -13,11 +13,11 @@ class AccountController extends Controller
     public function getAccounts()
     {
         try {
-            $status = request('status');
+            $status = request('status', 3);
             $fullname = request('fullname');
 
             $query = Account::with('customers')->where('is_admin', 0);
-            if ($status === 1 || $status === 0) {
+            if ($status == 1 || $status == 0) {
                 $query = $query->where('status', $status);
             }
             if (!empty($fullname)) {
@@ -25,11 +25,21 @@ class AccountController extends Controller
                     $query->where('fullname', 'LIKE', '%' . $fullname . '%');
                 });
             }
+            $page = request('page', 1);
+            $per_page = request('per_page', 4);
+            $total = $query->count();
+            $last_page = ceil($total / $per_page);
+            $query = $query->skip(($page - 1) * $per_page)->take($per_page);
 
             return response()->json([
                 'status' => true,
                 'data' => $query->get(),
-                'message' => $fullname,
+                'page' => [
+                    'current_page' => (int)$page,
+                    'last_page' => $last_page,
+                    'per_page' => (int)$per_page,
+                    'total' => $total,
+                ],
             ], 200);
         } catch (Exception $e) {
             return response()->json([
