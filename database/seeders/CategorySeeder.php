@@ -13,12 +13,12 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         DB::table('categories')->insert([
-            ['name' => 'Chiên', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Khác', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Hấp', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Xào', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Kho', 'created_at' => now(), 'updated_at' => now()],
             ['name' => 'Đồ ngọt', 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Khác', 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Chiên', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

@@ -23,7 +23,7 @@ class OrderController extends Controller
             $sort_by = request('sort_by');
             $fullname = request('fullname');
 
-            $query = Order::with('order_details.food', 'customer', 'order_status');
+            $query = Order::with('order_details.food', 'customer', 'order_status', 'coupon');
             /** @var \App\Models\Account $account */
             $account = auth()->user();
 
@@ -52,9 +52,20 @@ class OrderController extends Controller
                     break;
             }
 
+            $page = request('page', 1);
+            $per_page = request('per_page', 4);
+            $total = $query->count();
+            $last_page = ceil($total / $per_page);
+            $query = $query->skip(($page - 1) * $per_page)->take($per_page);
             return response()->json([
                 'status' => true,
                 'data' => $query->get(),
+                'page' => [
+                    'current_page' => (int)$page,
+                    'last_page' => $last_page,
+                    'per_page' => (int)$per_page,
+                    'total' => $total,
+                ],
             ], 200);
         } catch (Exception $e) {
             return response()->json([
@@ -257,7 +268,7 @@ class OrderController extends Controller
             $start_date = request('start_date');
             $end_date = request('end_date');
 
-            $query = Order::select('customer_id', DB::raw('SUM(total_amount) as total_money_orders'), DB::raw('COUNT(*) as total_quantity_orders'));
+            $query = Order::select('customer_id', DB::raw('SUM(total_amount) as total_money_orders'), DB::raw('COUNT(*) as total_quantity_orders'))->where('order_status_id', 4);
             if ($start_date && $end_date) {
                 $query->whereBetween('created_at', [$start_date, $end_date]);
             }

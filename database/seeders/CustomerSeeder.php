@@ -17,7 +17,7 @@ class CustomerSeeder extends Seeder
                 'fullname' => 'Nguyễn Văn A',
                 'phone' => '0912345678',
                 'address' => '123 Đường ABC, Quận 1, TP.HCM',
-                'account_id' => 2, // Assuming account_id 2 is for customer1@example.com
+                'account_id' => 2,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -25,7 +25,7 @@ class CustomerSeeder extends Seeder
                 'fullname' => 'Trần Thị B',
                 'phone' => '0987654321',
                 'address' => '456 Đường XYZ, Quận 3, TP.HCM',
-                'account_id' => 3, // Assuming account_id 3 is for customer2@example.com
+                'account_id' => 3,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

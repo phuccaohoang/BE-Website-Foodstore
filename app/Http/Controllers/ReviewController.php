@@ -47,13 +47,13 @@ class ReviewController extends Controller
             $sort_by = request('sort_by');
 
             $query = Review::with('feedbacks', 'food', 'customer');
-            if ($is_feedback === 1) {
+            if ($is_feedback == 1) {
                 $query = $query->has('feedbacks');
             }
-            if ($is_feedback === 0) {
+            if ($is_feedback == 0) {
                 $query = $query->doesntHave('feedbacks');
             }
-            if (!empty($status)) {
+            if ($status == 1 || $status == 0) {
                 $query = $query->where('status', $status);
             }
             switch ($sort_by) {
@@ -68,9 +68,21 @@ class ReviewController extends Controller
                     break;
             }
 
+            $page = request('page', 1);
+            $per_page = request('per_page', 4);
+            $total = $query->count();
+            $last_page = ceil($total / $per_page);
+            $query = $query->skip(($page - 1) * $per_page)->take($per_page);
+
             return response()->json([
                 'status' => true,
                 'data' => $query->get(),
+                'page' => [
+                    'current_page' => (int)$page,
+                    'last_page' => $last_page,
+                    'per_page' => (int)$per_page,
+                    'total' => $total,
+                ],
             ], 200);
         } catch (Exception $e) {
             return response()->json([

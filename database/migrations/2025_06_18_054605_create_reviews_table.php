@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->constrained('customers');
             $table->foreignId('food_id')->constrained('foods');
-            $table->unsignedTinyInteger('rating');
+            $table->boolean('rating');
             $table->string('text', 100)->nullable();
             $table->boolean('status')->default(1);
             $table->timestamp('created_at')->useCurrent();

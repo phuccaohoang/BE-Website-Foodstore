@@ -18,9 +18,13 @@ class OrderDetailController extends Controller
             $end_date = request('end_date');
 
             $query = OrderDetail::select('food_id', DB::raw('SUM(quantity) as total_quantity'));
-            if ($start_date && $end_date) {
-                $query->whereBetween('created_at', [$start_date, $end_date]);
-            }
+            $query = $query->whereHas('order', function ($query) use ($start_date, $end_date) {
+                $q = $query->where('order_status_id', 4);
+                if ($start_date && $end_date) {
+                    $q = $q->whereBetween('created_at', [$start_date, $end_date]);
+                }
+                return $q;
+            });
             $query = $query->groupBy('food_id')->orderBy('total_quantity', 'desc')->with('food');
 
             return response()->json([

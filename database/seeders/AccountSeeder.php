@@ -15,7 +15,7 @@ class AccountSeeder extends Seeder
     {
         DB::table('accounts')->insert([
             [
-                'email' => 'admin@example.com',
+                'email' => 'admin@gmail.com',
                 'password' => Hash::make('adminpassword'),
                 'avatar' => null,
                 'is_admin' => 1,
@@ -24,7 +24,7 @@ class AccountSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'email' => 'customer1@example.com',
+                'email' => 'user1@gmail.com',
                 'password' => Hash::make('password123'),
                 'avatar' => null,
                 'is_admin' => 0,
@@ -33,7 +33,7 @@ class AccountSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'email' => 'customer2@example.com',
+                'email' => 'user2@gmail.com',
                 'password' => Hash::make('password123'),
                 'avatar' => null,
                 'is_admin' => 0,

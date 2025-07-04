@@ -77,7 +77,7 @@ class CouponController extends Controller
             $sort_by = request('sort_by');
 
             $query = Coupon::query();
-            if ($status === 1 || $status === 0) {
+            if ($status == 1 || $status == 0) {
                 $query = $query->where('status', $status);
             }
             switch ($sort_by) {
@@ -110,9 +110,21 @@ class CouponController extends Controller
                     break;
             }
 
+            $page = request('page', 1);
+            $per_page = request('per_page', 4);
+            $total = $query->count();
+            $last_page = ceil($total / $per_page);
+            $query = $query->skip(($page - 1) * $per_page)->take($per_page);
+
             return response()->json([
                 'status' => true,
                 'data' => $query->get(),
+                'page' => [
+                    'current_page' => (int)$page,
+                    'last_page' => $last_page,
+                    'per_page' => (int)$per_page,
+                    'total' => $total,
+                ],
             ], 200);
         } catch (Exception $e) {
             return response()->json([

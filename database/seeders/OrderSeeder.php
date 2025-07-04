@@ -22,6 +22,7 @@ class OrderSeeder extends Seeder
                 'delivery_cost' => 25000.00,
                 'coupon_id' => 1,
                 'note' => 'Giao hàng buổi chiều',
+                'is_payment' => 1,
                 'order_status_id' => 4, // Đã giao
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -35,6 +36,7 @@ class OrderSeeder extends Seeder
                 'delivery_cost' => 25000.00,
                 'coupon_id' => null,
                 'note' => null,
+                'is_payment' => 1,
                 'order_status_id' => 3, // Đang giao
                 'created_at' => now(),
                 'updated_at' => now(),
