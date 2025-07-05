@@ -101,7 +101,7 @@ class OrderController extends Controller
                     }
                 }
             }
-            if ($order_status_id === 3) {
+            if ($order_status_id === 3 && $order_status_id === 4) {
                 Order::whereIn('id', $list_id)->update(['is_payment' => 1]);
             }
 
