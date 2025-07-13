@@ -25,7 +25,9 @@ class FoodController extends Controller
 
 
 
-            $query = Food::with('category', 'images');
+            $query = Food::with('category', 'images')->whereHas('category', function ($query) {
+                $query->where('status', 1);
+            });;
 
             if (!empty($name)) {
                 $query = $query->where('name', 'LIKE', '%' . $name . '%');

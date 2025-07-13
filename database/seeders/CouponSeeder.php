@@ -15,7 +15,7 @@ class CouponSeeder extends Seeder
         DB::table('coupons')->insert([
             [
                 'name' => 'GIAM20K',
-                'description' => 'Miễn phí 20k cho đơn hàng trên 100k',
+                'description' => 'Giảm 20k cho đơn hàng trên 100k',
                 'min_order_value' => 100000.00,
                 'discount' => 20000.00, // Assuming a fixed free shipping cost
                 'quantity' => 100,

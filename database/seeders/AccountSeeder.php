@@ -41,6 +41,33 @@ class AccountSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'email' => 'user3@gmail.com',
+                'password' => Hash::make('password123'),
+                'avatar' => null,
+                'is_admin' => 0,
+                'status' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'email' => 'user4@gmail.com',
+                'password' => Hash::make('password123'),
+                'avatar' => null,
+                'is_admin' => 0,
+                'status' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'email' => 'user5@gmail.com',
+                'password' => Hash::make('password123'),
+                'avatar' => null,
+                'is_admin' => 0,
+                'status' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
 
         ]);
     }

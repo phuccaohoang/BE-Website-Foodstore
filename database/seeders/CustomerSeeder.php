@@ -29,6 +29,30 @@ class CustomerSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'fullname' => 'Phạm Văn C',
+                'phone' => '0912345444',
+                'address' => '117 Đường AJK, Quận 2, TP.HCM',
+                'account_id' => 4,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'fullname' => 'Lê Thị D',
+                'phone' => '0987654333',
+                'address' => '198 Đường TRS, Quận 3, TP.HCM',
+                'account_id' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'fullname' => 'Đặng Hoàng K',
+                'phone' => '0987654314',
+                'address' => '198 Đường TRS, Quận 1, TP.HCM',
+                'account_id' => 6,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

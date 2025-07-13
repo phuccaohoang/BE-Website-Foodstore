@@ -63,6 +63,7 @@ Route::prefix('/get')->group(function () {
 
 
     Route::get('/statistics-foods', [OrderDetailController::class, 'statisticsFoods']);
+    Route::get('/statistics-foods-not-order', [OrderDetailController::class, 'statisticsFoodsNotOrder']);
 
     Route::get('/statistics-customers', [OrderController::class, 'statisticsCustomers']);
 
@@ -97,6 +98,8 @@ Route::middleware('jwt.cookie')->group(function () {
         Route::put('/foods', [FoodController::class, 'updateFoods']);
         Route::post('/food', [FoodController::class, 'updateFood']);
 
+        Route::put('/category', [CategoryController::class, 'updateCategory']);
+
         Route::patch('/cart', [CartController::class, 'updateCart']);
 
         Route::patch('/coupon-status', [CouponController::class, 'updateCouponStatus']);
@@ -109,6 +112,8 @@ Route::middleware('jwt.cookie')->group(function () {
 
     Route::prefix('/store')->group(function () {
         Route::post('/food', [FoodController::class, 'storeFood']);
+
+        Route::post('/category', [CategoryController::class, 'storeCategory']);
 
         Route::post('/cart', [CartController::class, 'storeCart']);
 

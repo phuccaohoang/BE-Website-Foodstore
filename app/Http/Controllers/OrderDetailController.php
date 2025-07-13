@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Food;
 use App\Models\OrderDetail;
 use Exception;
 use Illuminate\Http\Request;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrderDetailController extends Controller
 {
-    //
+    // danh sach da ban
     public function statisticsFoods()
     {
         try {
@@ -26,6 +27,36 @@ class OrderDetailController extends Controller
                 return $q;
             });
             $query = $query->groupBy('food_id')->orderBy('total_quantity', 'desc')->with('food');
+
+
+            return response()->json([
+                'status' => true,
+                'data' => $query->get(),
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    // danh sach ko ban duoc
+    public function statisticsFoodsNotOrder()
+    {
+        try {
+            $start_date = request('start_date');
+            $end_date = request('end_date');
+
+            $query = Food::whereDoesntHave('order_details', function ($q) use ($start_date, $end_date) {
+                $q->whereHas('order', function ($q2) use ($start_date, $end_date) {
+                    $q2 = $q2->where('order_status_id', 4);
+
+                    if ($start_date && $end_date) {
+                        $q2 = $q2->whereBetween('created_at', [$start_date, $end_date]);
+                    }
+                    return $q2;
+                });
+            });
 
             return response()->json([
                 'status' => true,

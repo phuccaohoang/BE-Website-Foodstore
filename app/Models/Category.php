@@ -9,6 +9,11 @@ class Category extends Model
 {
     use HasFactory;
     protected $table = "categories";
+    protected $fillable = [
+        'name',
+        'status',
+    ];
+
     protected $hidden = [
         'created_at',
         'updated_at',
